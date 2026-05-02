@@ -6,10 +6,9 @@ A minimal Docker image running [Unbound](https://nlnetlabs.nl/projects/unbound/)
 
 1. In the Unraid Docker tab, click **Add Container**
 2. Set the repository to `rccampbell/unbound:latest`
-3. Set **Network Type** to `Host`
-4. Add two ports: `5335/TCP` and `5335/UDP`
-5. No volumes needed
-6. Apply and start the container
+3. Set **Network Type** to `Host` — port 5335 is available on the host automatically; no port mapping needed
+4. No volumes needed
+5. Apply and start the container
 
 ## Pi-hole Configuration
 
@@ -33,9 +32,9 @@ dig google.com @127.0.0.1 -p 53
 
 Both commands should return a valid answer. The first query to Unbound will be slightly slower (recursive resolution from root servers); subsequent queries will be served from cache.
 
-To confirm DNSSEC is active, look for the `ad` flag in the Unbound response:
+To confirm DNSSEC is active, look for the `ad` (Authenticated Data) flag in the Unbound response. Use a DNSSEC-signed domain like `cloudflare.com` — `google.com` is not DNSSEC-signed and won't show the flag:
 ```bash
-dig google.com @127.0.0.1 -p 5335 +dnssec | grep "^;; flags"
+dig cloudflare.com @127.0.0.1 -p 5335 +dnssec | grep "^;; flags"
 # expected: ;; flags: qr rd ra ad; ...
 ```
 
